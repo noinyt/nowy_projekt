@@ -2,9 +2,10 @@ import { auth } from "@/../auth";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
 import { deleteUser } from "@/app/actions";
+import { Pagination } from "@/components/Pagination";
 import Link from "next/link";
 
-export default async function AdminPage() {
+export default async function AdminPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
   const session = await auth();
 
   // Podwójne zabezpieczenie
@@ -12,14 +13,18 @@ export default async function AdminPage() {
     redirect('/');
   }
 
-  const users = await prisma.user.findMany({
-    include: {
-      _count: {
-        select: { tasks: true }
-      }
-    },
-    orderBy: { createdAt: 'desc' }
-  });
+  const params = await searchParams;
+    const currentPage = Number(params?.page) || 1;
+    const PAGE_SIZE = 10;
+
+    const totalUsers = await prisma.user.count();
+    
+    const users = await prisma.user.findMany({
+        include: { _count: { select: { tasks: true } } },
+        orderBy: { createdAt: 'desc' },
+        take: PAGE_SIZE,
+        skip: (currentPage - 1) * PAGE_SIZE
+    });
 
   return (
     <main className="min-h-screen bg-gray-100 p-8">
@@ -72,6 +77,7 @@ export default async function AdminPage() {
               ))}
             </tbody>
           </table>
+          <Pagination totalItems={totalUsers} pageSize={PAGE_SIZE} baseUrl="/admin" />
         </div>
       </div>
     </main>

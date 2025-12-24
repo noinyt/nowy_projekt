@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Footer } from "@/components/Footer";
+import { auth } from "@/../auth"; // Import sesji
+import { Navbar } from "@/components/Navbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,17 +20,19 @@ export const metadata: Metadata = {
   description: "Testowy menedżer zadań",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default async function RootLayout({ children }: { children: React.ReactNode })
+{
+  const session = await auth();
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 flex flex-col min-h-screen`}
       >
-        {children}
+        <Navbar user={session?.user} />
+        <div className="grow w-full">
+          {children}
+        </div>
+        <Footer />
       </body>
     </html>
   );
