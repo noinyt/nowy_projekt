@@ -36,7 +36,7 @@ export default async function TasksPage({ searchParams }: { searchParams: Promis
   }));
 
   return (
-    <main className="min-h-screen bg-gray-50 p-4 md:p-8">
+    <main className="min-h-scree p-4 md:p-8">
        <div className="max-w-5xl mx-auto">
          <h1 className="text-2xl md:text-3xl font-bold mb-6 text-gray-900">Twoje Zadania</h1>
          <TaskList initialTasks={serializedTasks} />

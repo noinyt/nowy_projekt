@@ -12,7 +12,7 @@ export function StatsDashboard({ userCount, taskStats }: StatsProps) {
     ilość: s.count
   }));
   
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28'];
+  const COLORS = ['#016630', '#193cb8', '#e8d5c7'];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">

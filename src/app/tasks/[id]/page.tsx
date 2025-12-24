@@ -31,7 +31,7 @@ export default async function TaskPage({ params }: Props) {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 p-8">
+    <main className="min-h-screen p-8">
       <div className="max-w-3xl mx-auto">
         <Link href={backLink} className="text-sm text-gray-500 hover:text-gray-900 mb-4 inline-block items-center gap-1">
           <span>&larr;</span> {backLabel}

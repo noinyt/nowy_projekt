@@ -3,14 +3,19 @@
 import Link from "next/link";
 import { useState } from "react";
 import { signOut } from "next-auth/react"; // Używamy client-side signOut
+import { ConfirmationModal } from "./ConfirmationModal";
 
 interface NavbarProps {
   user?: { email?: string | null; role?: string } | null;
 }
 
 export function Navbar({ user }: NavbarProps) {
-  const [isModalOpen, setModalOpen] = useState(false);
-
+    const [isModalOpen, setModalOpen] = useState(false);
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
+    const handleLogout = async () => {
+    setIsLoggingOut(true);
+    await signOut({ callbackUrl: '/' });
+  };
   return (
     <>
       <nav className="bg-white border-b border-gray-200 px-4 py-3">
@@ -45,31 +50,18 @@ export function Navbar({ user }: NavbarProps) {
             )}
           </div>
         </div>
-      </nav>
-
-      {/* --- CUSTOMOWY MODAL --- */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full">
-            <h3 className="text-lg font-bold mb-2">Potwierdzenie</h3>
-            <p className="text-gray-600 mb-6">Czy na pewno chcesz się wylogować?</p>
-            <div className="flex justify-end gap-3">
-              <button 
-                onClick={() => setModalOpen(false)}
-                className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded"
-              >
-                Anuluj
-              </button>
-              <button 
-                onClick={() => signOut({ callbackUrl: '/' })}
-                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-              >
-                Wyloguj
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+          </nav>
+          <ConfirmationModal
+                isOpen={isModalOpen}
+                title="Potwierdzenie Wylogowania"
+                message="Czy na pewno chcesz się wylogować?"
+                confirmLabel="Wyloguj"
+                cancelLabel="Anuluj"
+                isDangerous={true}
+                isLoading={isLoggingOut}
+                onClose={() => setModalOpen(false)}
+                onConfirm={handleLogout}
+          />
     </>
   );
 }

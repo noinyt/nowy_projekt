@@ -1,8 +1,8 @@
 import { auth } from "@/../auth";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
-import { deleteUser } from "@/app/actions";
 import { Pagination } from "@/components/Pagination";
+import { DeleteUserButton } from "@/components/DeleteUserButton";
 import Link from "next/link";
 
 export default async function AdminPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
@@ -27,7 +27,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     });
 
   return (
-    <main className="min-h-screen bg-gray-100 p-8">
+    <main className="min-h-scree p-8">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Panel Administratora</h1>
@@ -64,14 +64,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
                     <Link href={`/admin/tasks/${user.id}`}className="text-blue-600 hover:text-blue-900 font-medium">Pokaż zadania ({user._count.tasks})</Link>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    {user.email !== session?.user?.email && (
-                      <form action={async () => {
-                        'use server';
-                        await deleteUser(user.id);
-                      }}>
-                        <button className="text-red-600 hover:text-red-900 font-bold">Usuń</button>
-                      </form>
-                    )}
+                    {user.email !== session?.user?.email && (<DeleteUserButton userId={user.id} />)}
                   </td>
                 </tr>
               ))}

@@ -55,7 +55,7 @@ export async function createTask(targetUserId: string | null, formData: FormData
     },
   });
 
-  revalidatePath('/');
+  revalidatePath('/tasks');
   revalidatePath('/admin/tasks/[userId]', 'page');
 }
 
@@ -89,7 +89,7 @@ export async function deleteTask(taskId: string) {
   });
 
   // Revalidate: Odświeżamy zarówno stronę główną (dla usera), jak i admina
-  revalidatePath('/');
+  revalidatePath('/tasks');
   revalidatePath('/admin/tasks/[userId]', 'page'); // Odśwież widok admina
 }
 
@@ -132,7 +132,7 @@ export async function toggleStatus(taskId: string) {
         data: { status: newStatus }
     });
 
-    revalidatePath('/');
+    revalidatePath('/tasks');
     revalidatePath('/admin/tasks/[userId]', 'page');
 }
 
@@ -207,4 +207,30 @@ export async function deleteUser(userId: string) {
   });
 
   revalidatePath('/admin');
+}
+export async function updateDescription(taskId: string, newDescription: string) {
+  const session = await auth();
+  if (!session?.user?.email) throw new Error("Unauthorized");
+
+  const currentUser = await prisma.user.findUnique({ where: { email: session.user.email } });
+  const task = await prisma.task.findUnique({ where: { id: taskId } });
+
+  if (!task || !currentUser) throw new Error("Nie znaleziono danych");
+
+  // Sprawdzenie uprawnień (Właściciel lub Admin)
+  const isOwner = task.userId === currentUser.id;
+  const isAdmin = currentUser.role === 'ADMIN';
+
+  if (!isOwner && !isAdmin) {
+    throw new Error("Brak uprawnień do edycji tego zadania");
+  }
+
+  await prisma.task.update({
+    where: { id: taskId },
+    data: { description: newDescription }
+  });
+
+  revalidatePath('/');
+  revalidatePath('/tasks');
+  revalidatePath('/admin/tasks/[userId]', 'page');
 }

@@ -37,7 +37,7 @@ export default async function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 p-8">
+    <main className="min-h-scree p-8">
       <div className="max-w-5xl mx-auto">
         <h1 className="text-3xl text-gray-950 mb-6">Dashboard</h1>
          <StatsDashboard userCount={userCount} taskStats={taskStats} />
